@@ -149,6 +149,8 @@ export function resetDatabase() {
   data = JSONClone(initialData);
 }
 
+
+
 /**
  * Reset database button.
  */
