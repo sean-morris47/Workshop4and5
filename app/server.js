@@ -97,12 +97,30 @@ export function postComment(feedItemId, author, contents, cb) {
   feedItem.comments.push({
     "author": author,
     "contents": contents,
-    "postDate": new Date().getTime()
+    "postDate": new Date().getTime(),
+    "likeCounter":[]
   });
   writeDocument('feedItems', feedItem);
   // Return a resolved version of the feed item so React can
   // render it.
   emulateServerReturn(getFeedItemSync(feedItemId), cb);
+}
+
+export function likeComment(feedItemId, userId, cb, commentIndex) {
+  var feedItem = readDocument('feedItems', feedItemId);
+  feedItem.comments[commentIndex].likeCounter.push(userId);
+  writeDocument('feedItems', feedItem);
+  emulateServerReturn(feedItem.comments[commentIndex].likeCounter, cb);
+}
+
+export function unlikeComment(feedItemId, userId, cb, commentIndex) {
+  var feedItem = readDocument('feedItems', feedItemId);
+  var userIndex = feedItem.comments[commentIndex].likeCounter.indexOf(userId);
+  if (userIndex !== -1) {
+    feedItem.comments[commentIndex].likeCounter.splice(userIndex, 1);
+    writeDocument('feedItems', feedItem);
+  }
+  emulateServerReturn(feedItem.comments[commentIndex].likeCounter, cb);
 }
 
 /**
